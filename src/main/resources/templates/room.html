@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head>
+        <meta name="title" content="Cheatsheetz - collaborative cheating service">
+        <meta name="description" content="Lorem ipsum">
+        <meta name="keywords" content="lorem, ipsum">
+        <meta name="robots" content="index, follow">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="language" content="English">
+
+        <title>Cheatsheetz</title>
+        <link rel="stylesheet" type="text/css" th:href="@{/styles.css}">
+        <link rel="stylesheet" th:href="@{/styles.css}">
+
+        <!-- FONTS -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;800&display=swap" rel="stylesheet">
+
+        <!-- SCRIPTS -->
+        <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+        <script th:src="@{/scripts.js}"></script>
+    </head>
+</head>
+<body>
+    <div class="questions">
+        <div class="submit-question">
+            <form id="postQuestion" method="POST">
+                <input name="submittedBy" type="text"/>
+                <input name="content" type="text"/>
+                <button type="submit">Send question</button>
+            </form>
+        </div>
+        <!-- POST QUESTION SCRIPT -->
+        <script>
+            $('#postQuestion').submit(function(e) {
+                e.preventDefault();
+                var submittedBy = $(this).find('input[name="submittedBy"]').val();
+                var content = $(this).find('input[name="content"]').val();
+                var path = window.location.pathname.split('/')[1];
+                alert(path);
+                $.ajax({
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    url: 'http://localhost:8080/submit-question?token=' + path,
+                    dataType: "json",
+                    processData: false,
+                    data: JSON.stringify({
+                        "submittedBy":submittedBy,
+                        "content":content
+                    }),
+                    success: function() {
+                        console.log("Post success");
+                    },
+                    error: function(request, error) {
+                        console.log("Error : " + JSON.stringify(request));
+                    }
+                });
+            })
+        </script>
+    </div>
+</body>
+</html>

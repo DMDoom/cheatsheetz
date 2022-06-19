@@ -1,0 +1,9 @@
+spring:
+  profiles:
+    active:
+      - dev
+  rsocket:
+    server:
+      transport: websocket
+      mapping-path: /rsocket
+  # Configure this so that questions don't appear at only 10 at a time but constantly
