@@ -36,22 +36,28 @@ public class ClientService {
     @Profile("dev")
     public ApplicationRunner sender() {
         return args -> {
+            this.questionSinkMap.computeIfAbsent("clienttoken", f -> Sinks.many().replay().all());
+            this.answerSinkMap.computeIfAbsent("clienttoken", f -> Sinks.many().replay().all());
+
             /* RSOCKET */
 
+            /*
             String token = "clienttoken";
             requester.route("questions/{token}", token)
                     .retrieveFlux(Question.class)
                     .delaySubscription(Duration.ofSeconds(6))
                     .doOnNext(question -> log.info("Received a new question through RSocket: {}", question))
                     .subscribe();
+             */
 
             /* POSTING QUESTIONS*/
             String postRequestTokenName = "clienttoken";
 
             // Create answer sink
-            this.answerSinkMap.computeIfAbsent(postRequestTokenName, f -> Sinks.many().replay().all());
+            //this.answerSinkMap.computeIfAbsent(postRequestTokenName, f -> Sinks.many().replay().all());
 
             // Create question sink and send questions
+            /*
             Flux.interval(Duration.ofSeconds(5))
                     .subscribe(e -> {
                         // Create a room token entry in HashMap if no such room exists and create a sink representing it
@@ -71,8 +77,9 @@ public class ClientService {
                                 "Question submitted and flowing through a sink",
                                 "kt7dsktmglf")); // will be randomly generated
                     });
+             */
 
-             /*
+            /*
             requester.route("greet")
                     .data("If this message arrives, everything works")
                     .retrieveMono(String.class)
