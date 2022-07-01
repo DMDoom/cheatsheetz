@@ -10,10 +10,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
-import java.time.Duration;
 import java.util.HashMap;
 
 @Service
@@ -36,6 +34,7 @@ public class ClientService {
     @Profile("dev")
     public ApplicationRunner sender() {
         return args -> {
+            /* This will be done upon room creation */
             this.questionSinkMap.computeIfAbsent("clienttoken", f -> Sinks.many().replay().all());
             this.answerSinkMap.computeIfAbsent("clienttoken", f -> Sinks.many().replay().all());
 

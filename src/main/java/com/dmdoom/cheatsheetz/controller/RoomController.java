@@ -13,7 +13,7 @@ import reactor.core.publisher.Sinks;
 import java.util.HashMap;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping("/room")
 public class RoomController {
 
     @Autowired

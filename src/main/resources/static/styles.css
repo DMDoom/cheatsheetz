@@ -39,6 +39,7 @@ h2 {
 
 .card {
     max-width: 350px;
+    min-width: 350px;
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -101,3 +102,45 @@ h2 {
     padding-top: 5px;
     padding-bottom: 5px;
 }
+
+.answer-submit {
+    background-color: #43506C;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+textarea {
+    width: 100%;
+    height: 150px;
+    padding: 5px 10px;
+    box-sizing: border-box;
+    border: 2px solid #43506C;
+    border-radius: 4px;
+    background-color: #0A131E;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    resize: none;
+    color: #f8f6ed;
+  }
+
+  button {
+    background-color: #0A131E;
+    border: none;
+    color: #f8f6ed;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  button:hover {
+    background-color: #f8f6ed;
+    color: #0A131E;
+  }
