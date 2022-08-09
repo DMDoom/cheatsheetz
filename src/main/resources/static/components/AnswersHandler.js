@@ -1,5 +1,5 @@
 export default {
-    props: ['questionToken', 'path', 'answers'],
+    props: ['questionToken', 'path', 'answers', 'username'],
     data() {
         return {
             submitAnswerForm: {
@@ -11,7 +11,7 @@ export default {
     },
     methods: {
         async postAnswer() {
-            this.submitAnswerForm.submittedBy = "placeholder";
+            this.submitAnswerForm.submittedBy = this.username;
             this.submitAnswerForm.answerToken = this.questionToken;
 
             const response = await fetch("http://localhost:8080/submit-answer?token=" + this.path, {

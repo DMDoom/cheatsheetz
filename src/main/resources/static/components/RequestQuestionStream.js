@@ -4,7 +4,8 @@
 
 // TODO:
 // add chat
-// add usernames (not actual accounts, just nicknames you join with, a popup on page load)
+// add question automatic numbering
+// fix css issue caused by rendering empty divs and using a gap for them, also make answer colors the same as question colors
 
 import AnswersHandler from './AnswersHandler.js'
 
@@ -17,6 +18,7 @@ export default {
             path: "",
             questions: [],
             answers: [],
+            username: "",
             submitQuestionForm: {
                 content: "",
                 submittedBy: ""
@@ -35,7 +37,7 @@ export default {
               .then(onComplete);
         },
         async fetchAnswersStream() {
-            console.log("Connecting ROOM answers listener to room token: " + this.path);
+            console.log("Connecting answers listener to room token: " + this.path);
             const stream = fetch("http://localhost:8080/get-answers-by-token?token=" + this.path);
             const onMessage = obj => this.answers.push(obj);
             const onComplete = () => console.log('The answer stream has completed');
@@ -45,7 +47,7 @@ export default {
               .then(onComplete);
         },
         async postQuestion() {
-            this.submitQuestionForm.submittedBy = "placeholder";
+            this.submitQuestionForm.submittedBy = this.username;
             const response = await fetch("http://localhost:8080/submit-question?token=" + this.path, {
                 method: 'POST',
                 headers: {
@@ -55,6 +57,10 @@ export default {
             })
 
             console.log("Submitted question successfully: " + response.json());
+        },
+        async updateUsername() {
+            this.username = document.getElementById('username-input').value;
+            console.log("Username set: " + this.username);
         }
     },
     created() {
@@ -65,6 +71,13 @@ export default {
         this.fetchAnswersStream();
     },
     template: `
+        <div class="popup" v-if="this.username === ''">
+            <div class="username-popup-content">
+                <h2> Enter nickname </h2>
+                <input id="username-input" name="username" type="text"/>
+                <button @click="updateUsername">Join</button>
+            </div>
+        </div>
         <div class="question-submit">
             <form @submit.prevent="postQuestion">
                 <textarea v-model="submitQuestionForm.content" placeholder="Type your question here..."></textarea>
@@ -85,7 +98,7 @@ export default {
             <!-- Have a single answer stream that is listened to here and pass the list of questions to individual questions to filter instead -->
             <!-- This will reduce the amount of connections open to two -->
             <div class="answers">
-                <AnswersHandler :path="this.path" :question-token="question.questionToken" :answers="this.answers"/>
+                <AnswersHandler :username="this.username" :path="this.path" :question-token="question.questionToken" :answers="this.answers"/>
             </div>
         </div>
     `

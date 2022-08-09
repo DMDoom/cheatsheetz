@@ -123,9 +123,9 @@ textarea {
     font-size: 16px;
     resize: none;
     color: #f8f6ed;
-  }
+}
 
-  button {
+button {
     background-color: #0A131E;
     border: none;
     color: #f8f6ed;
@@ -138,9 +138,45 @@ textarea {
     transition-duration: 0.4s;
     cursor: pointer;
     font-family: 'Open Sans', sans-serif;
-  }
+}
 
-  button:hover {
+button:hover {
     background-color: #f8f6ed;
     color: #0A131E;
-  }
+}
+
+.popup {
+  position: fixed;
+  z-index: 1;
+  background-color: rgba(0,0,0,0.4);
+  overflow: auto;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.username-popup-content {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  background-color: #0A131E;
+  margin-top: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  min-width: 400px;
+}
+
+#username-input {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  margin: 4px 2px;
+  color: black;
+  width: 150px;
+}
