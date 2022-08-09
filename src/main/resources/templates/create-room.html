@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form method="POST" th:action="@{/}" th:object="${room}">
+        <input name="token" type="text"/>
+        <button type="submit">Create room</button>
+    </form>
+</body>
+</html>

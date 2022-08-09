@@ -2,6 +2,7 @@ package com.dmdoom.cheatsheetz.config;
 
 import com.dmdoom.cheatsheetz.model.Answer;
 import com.dmdoom.cheatsheetz.model.Question;
+import com.dmdoom.cheatsheetz.service.QuestionModifierService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +25,9 @@ public class RouterConfig {
 
     @Autowired
     HashMap<String, Sinks.Many<Answer>> answerSinkMap;
+
+    @Autowired
+    QuestionModifierService questionModifier;
 
     @Bean
     public RouterFunction<ServerResponse> routes() {
@@ -60,19 +64,21 @@ public class RouterConfig {
                 .log();
     }
 
-    // Get question stream from a specific room
+    // Get question stream from a specific Sink
     public Mono<ServerResponse> getQuestionStreamByRoomToken(ServerRequest request) {
         String token = request.queryParam("token").get().toString();
         return ServerResponse.ok().contentType(MediaType.APPLICATION_NDJSON).body(questionSinkMap.get(token).asFlux(), Question.class).log();
     }
 
-    // Submit question to a specific room
+    // Handle submitted questions
+    // Generates question token and publishes to Sink
     public Mono<ServerResponse> submitQuestionWithToken(ServerRequest request) {
         String token = request.queryParam("token").get().toString();
         return request.bodyToMono(Question.class)
                 .doOnNext(question -> {
-                    // Generate a question token here
-                    question.setQuestionToken("lsfobnk5nmf");
+                    // Generate a random question token and color
+                    question.setQuestionToken(questionModifier.generateToken());
+                    question.setHexColor(questionModifier.generateColor());
                     questionSinkMap.get(token).tryEmitNext(question);
                 })
                 .flatMap(question -> {

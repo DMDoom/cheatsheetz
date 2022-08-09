@@ -38,29 +38,11 @@ public class ClientService {
             this.questionSinkMap.computeIfAbsent("clienttoken", f -> Sinks.many().replay().all());
             this.answerSinkMap.computeIfAbsent("clienttoken", f -> Sinks.many().replay().all());
 
-            /* RSOCKET */
-
-            /*
-            String token = "clienttoken";
-            requester.route("questions/{token}", token)
-                    .retrieveFlux(Question.class)
-                    .delaySubscription(Duration.ofSeconds(6))
-                    .doOnNext(question -> log.info("Received a new question through RSocket: {}", question))
-                    .subscribe();
-             */
-
-            /* POSTING QUESTIONS*/
-            String postRequestTokenName = "clienttoken";
-
-            // Create answer sink
-            //this.answerSinkMap.computeIfAbsent(postRequestTokenName, f -> Sinks.many().replay().all());
-
             // Create question sink and send questions
             /*
+            String postRequestTokenName = "clienttoken";
             Flux.interval(Duration.ofSeconds(5))
                     .subscribe(e -> {
-                        // Create a room token entry in HashMap if no such room exists and create a sink representing it
-                        // This sink will be later accessed on client request
                         this.questionSinkMap.computeIfAbsent(postRequestTokenName, f -> {
                             Sinks.Many<Question> sink = Sinks.many().replay().all();
                             log.info("Computing a new value");
@@ -70,20 +52,29 @@ public class ClientService {
 
                         log.info("Posting a new question");
 
-                        // Get a sink by the name and make it publish submitted Question to all of its subscribers
                         this.questionSinkMap.get(postRequestTokenName).tryEmitNext(new Question(
                                 "John",
                                 "Question submitted and flowing through a sink",
                                 "kt7dsktmglf")); // will be randomly generated
                     });
-             */
+            */
 
             /*
             requester.route("greet")
                     .data("If this message arrives, everything works")
                     .retrieveMono(String.class)
                     .subscribe(reply -> log.info("Reply; {}", reply));
-             */
+            */
+
+            /* RSOCKET */
+            /*
+            String token = "clienttoken";
+            requester.route("questions/{token}", token)
+                    .retrieveFlux(Question.class)
+                    .delaySubscription(Duration.ofSeconds(6))
+                    .doOnNext(question -> log.info("Received a new question through RSocket: {}", question))
+                    .subscribe();
+            */
 
             /* WEBCLIENT */
             /*
@@ -109,7 +100,7 @@ public class ClientService {
                     .exchangeToMono(cr -> Mono.just(cr))
                     .flatMap(cr -> cr.bodyToMono(Question.class))
                     .subscribe(r -> log.info("Submitted a question"));
-             */
+            */
         };
     }
 

@@ -13,6 +13,7 @@ public class Question {
     private String submittedBy;
     private String content;
     private String questionToken;
+    private String hexColor;
     //private Type type;
     //private ArrayList<Answer> answers;
     // Color should not be client-sided to avoid confusion

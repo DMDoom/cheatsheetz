@@ -25,13 +25,6 @@
     </head>
 </head>
 <body>
-    <div class="submit-question">
-        <form id="postQuestion" method="POST">
-            <input name="submittedBy" type="text"/>
-            <input name="content" type="text"/>
-            <button type="submit">Send question</button>
-        </form>
-    </div>
     <div class="questions" id="questions-and-answers">
         <!-- RequestQuestionStream.js -->
     </div>
@@ -42,35 +35,6 @@
         import { createApp } from '/webjars/vue/dist/vue.esm-browser.js'
 
         createApp(RequestQuestionStream).mount('#questions-and-answers');
-    </script>
-
-    <!-- POST QUESTION SCRIPT -->
-    <script>
-        $('#postQuestion').submit(function(e) {
-            e.preventDefault();
-            var submittedBy = $(this).find('input[name="submittedBy"]').val();
-            var content = $(this).find('input[name="content"]').val();
-            var path = window.location.pathname.split('/')[2];
-            console.log(path);
-            alert(path);
-            $.ajax({
-                type: 'POST',
-                contentType: "application/json; charset=utf-8",
-                url: 'http://localhost:8080/submit-question?token=' + path,
-                dataType: "json",
-                processData: false,
-                data: JSON.stringify({
-                    "submittedBy":submittedBy,
-                    "content":content
-                }),
-                success: function() {
-                    console.log("Post success");
-                },
-                error: function(request, error) {
-                    console.log("Error : " + JSON.stringify(request));
-                }
-            });
-        })
     </script>
 </body>
 </html>

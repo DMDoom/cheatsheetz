@@ -26,8 +26,9 @@ public class RoomController {
     public String getRoom(@PathVariable("token") String token, Model model) {
         // Ensure everything initializes properly
         if (questionSinkMap.get(token) == null || answerSinkMap.get(token) == null) {
-            return "errorpage";
+            return "error-page";
         }
+
         // Will be used to connect to corresponding websockets
         // This way room links can be shared as a way to join a room
         model.addAttribute("token", token);
