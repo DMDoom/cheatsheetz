@@ -5,7 +5,6 @@
 // TODO:
 // add chat
 // add question automatic numbering
-// fix css issue caused by rendering empty divs and using a gap for them, also make answer colors the same as question colors
 
 import AnswersHandler from './AnswersHandler.js'
 
@@ -98,7 +97,13 @@ export default {
             <!-- Have a single answer stream that is listened to here and pass the list of questions to individual questions to filter instead -->
             <!-- This will reduce the amount of connections open to two -->
             <div class="answers">
-                <AnswersHandler :username="this.username" :path="this.path" :question-token="question.questionToken" :answers="this.answers"/>
+                <AnswersHandler
+                    :color="question.hexColor"
+                    :username="this.username"
+                    :path="this.path"
+                    :question-token="question.questionToken"
+                    :answers="this.answers"
+                />
             </div>
         </div>
     `

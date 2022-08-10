@@ -1,5 +1,5 @@
 export default {
-    props: ['questionToken', 'path', 'answers', 'username'],
+    props: ['color', 'questionToken', 'path', 'answers', 'username'],
     data() {
         return {
             submitAnswerForm: {
@@ -25,6 +25,13 @@ export default {
             console.log("Submitted answer successfully: " + response.json());
         }
     },
+    computed: {
+        questionAnswers() {
+            return this.answers.filter(answer => {
+                return answer.answerToken === this.questionToken;
+            });
+        }
+    },
     template: `
         <div class="answer-submit">
             <form @submit.prevent="postAnswer">
@@ -32,15 +39,13 @@ export default {
                 <button>Submit answer</button>
             </form>
         </div>
-        <div class="answer" v-for="answer in answers">
+        <div class="answer" v-for="answer in questionAnswers">
             <!-- Only render when answer token matches question token -->
-            <div v-if="answer.answerToken === this.questionToken">
-                <div class="answer-submitted-by" style="background-color: #EF4B4C;">
-                    <p> {{answer.submittedBy}} </p>
-                </div>
-                <div class="content">
-                    <p> {{answer.content}} </p>
-                </div>
+            <div class="answer-submitted-by" :style="{backgroundColor: this.color}">
+                <p> {{answer.submittedBy}} </p>
+            </div>
+            <div class="content">
+                <p> {{answer.content}} </p>
             </div>
         </div>
     `

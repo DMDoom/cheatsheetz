@@ -21,11 +21,15 @@ public final class QuestionModifierService {
         String[] hexColors = {
                 "#3D619B",
                 "#EF4B4C",
-                "B85E25",
+                "#B85E25",
                 "#469D67",
                 "#684C9F",
                 "#2E3443",
-                "#9749A6"
+                "#9749A6",
+                "#54C4BF",
+                "#C77398",
+                "#AF987E",
+                "#EB9447"
         };
 
         this.colors.addAll(List.of(hexColors));
