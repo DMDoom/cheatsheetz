@@ -3,8 +3,15 @@
 // Answers to questions are filtered and rendered using individual question tokens that are randomly generated upon question submissions
 
 // TODO:
+// add question and answer client-side delete buttons
+
+// add system to detect whether a question is a duplicate or not
+
+// add active users list
 // add chat
-// add question automatic numbering
+
+// can delete from the list of questions/answers by specifying a list of deleted questions/answers which will not render
+// this can be made global by sending said list to the server to pass onto the rest of the users, or local, by keeping it to the user session
 
 import AnswersHandler from './AnswersHandler.js'
 
@@ -19,6 +26,7 @@ export default {
             answers: [],
             username: "",
             submitQuestionForm: {
+                number: "",
                 content: "",
                 submittedBy: ""
             }
@@ -57,10 +65,11 @@ export default {
 
             console.log("Submitted question successfully: " + response.json());
         },
+        /* Might also notify the server of user joining, sending simple String to the backend */
         async updateUsername() {
             this.username = document.getElementById('username-input').value;
             console.log("Username set: " + this.username);
-        }
+        },
     },
     created() {
         this.path = window.location.pathname.split('/')[2];
@@ -68,6 +77,11 @@ export default {
     mounted() {
         this.fetchQuestionsStream();
         this.fetchAnswersStream();
+    },
+    computed: {
+        sortedQuestions() {
+            return this.questions.sort((a, b) => (a.number > b.number ? 1 : -1));
+        }
     },
     template: `
         <div class="popup" v-if="this.username === ''">
@@ -79,18 +93,19 @@ export default {
         </div>
         <div class="question-submit">
             <form @submit.prevent="postQuestion">
+                <input type="text" v-model="submitQuestionForm.number" placeholder="Question number..."></textarea>
                 <textarea v-model="submitQuestionForm.content" placeholder="Type your question here..."></textarea>
                 <button>Submit answer</button>
             </form>
         </div>
-        <div class="card" v-for="question in questions">
+        <div class="card" v-for="question in sortedQuestions">
             <!-- Question space -->
             <div class="question" :style="{backgroundColor: question.hexColor}" >
                 <div class="question-submitted-by" style="background-color: #43506C;">
                     <h2> {{question.submittedBy}} </h2>
                 </div>
                 <div class="content">
-                    <h2><span class="question-number">1. </span>{{question.content}}</h2>
+                    <h2><span class="question-number" v-if="question.number > 0">{{question.number}}. </span>{{question.content}}</h2>
                 </div>
             </div>
             <!-- Answers space -->

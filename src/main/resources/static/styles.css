@@ -124,6 +124,16 @@ textarea {
     color: #f8f6ed;
 }
 
+input {
+  font-family: 'Open Sans', sans-serif;
+  color: #f8f6ed;
+  background-color: #0A131E;
+  font-size: 16px;
+  border: 2px solid #43506C;
+  border-radius: 4px;
+  padding: 5px 10px;
+}
+
 button {
     background-color: #0A131E;
     border: none;
@@ -176,6 +186,6 @@ button:hover {
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   margin: 4px 2px;
-  color: black;
+  color: #f8f6ed;
   width: 150px;
 }

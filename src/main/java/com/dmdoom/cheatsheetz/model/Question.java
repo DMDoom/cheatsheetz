@@ -10,14 +10,12 @@ import lombok.NoArgsConstructor;
 public class Question {
 
     // Basic
+    private int number;
     private String submittedBy;
     private String content;
     private String questionToken;
     private String hexColor;
     //private Type type;
-    //private ArrayList<Answer> answers;
-    // Color should not be client-sided to avoid confusion
-    // private Color color;
 
     // Options
     //boolean specifyTypeRequired;
