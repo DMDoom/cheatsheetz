@@ -167,7 +167,7 @@ button:hover {
   justify-content: center;
 }
 
-.username-popup-content {
+.popup-content {
   position: fixed;
   display: flex;
   flex-direction: column;
@@ -180,6 +180,16 @@ button:hover {
   padding: 20px;
   border: 1px solid #888;
   min-width: 400px;
+}
+
+.accept {
+  background-color: green;
+  width: 200px;
+}
+
+.reject {
+  background-color: red;
+  width: 200px;
 }
 
 #username-input {

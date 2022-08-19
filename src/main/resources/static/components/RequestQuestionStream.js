@@ -25,6 +25,7 @@ export default {
             questions: [],
             answers: [],
             username: "",
+            alertDuplicate: false,
             submitQuestionForm: {
                 number: "",
                 content: "",
@@ -53,6 +54,13 @@ export default {
               .then(readStream(onMessage))
               .then(onComplete);
         },
+        checkDuplicatesBeforePostingQuestion() {
+            if (this.checkForDuplicates(this.submitQuestionForm.content)) {
+                this.alertDuplicate = true;
+            } else {
+                this.postQuestion();
+            }
+        },
         async postQuestion() {
             this.submitQuestionForm.submittedBy = this.username;
             const response = await fetch("http://localhost:8080/submit-question?token=" + this.path, {
@@ -65,11 +73,59 @@ export default {
 
             console.log("Submitted question successfully: " + response.json());
         },
+        rejectQuestion() {
+            this.alertDuplicate = false;
+        },
+        acceptQuestion() {
+            this.alertDuplicate = false;
+            this.postQuestion();
+        },
         /* Might also notify the server of user joining, sending simple String to the backend */
         async updateUsername() {
             this.username = document.getElementById('username-input').value;
             console.log("Username set: " + this.username);
         },
+        checkForDuplicates(questionToSubmit) {
+            // Count word frequency of passed question
+            var submitWords = questionToSubmit.toString().split(" ");
+            var submitWordFreq = new Map();
+            for (const word of submitWords) {
+                submitWordFreq.set(word, (submitWordFreq.get(word) || 0) + 1);
+            }
+
+            // Compare against word frequency of existing questions
+            for (const presentQuestion of this.questions) {
+                // Count frequency of existing question
+                var presentWords = presentQuestion.content.toString().split(" ");
+                var presentWordFreq = new Map();
+                for (const word of presentWords) {
+                    presentWordFreq.set(word, (presentWordFreq.get(word) || 0) + 1);
+                }
+
+                // Check for mismatched length
+                var twentyPercent = 0.2 * submitWords.length;
+                if (Math.abs(submitWords.length - presentWords.length) > twentyPercent) {
+                    continue;
+                }
+
+                var mismatchCount = 0;
+                for (const word of submitWordFreq.keys()) {
+                    if (!presentWordFreq.has(word)) {
+                        mismatchCount++;
+                        continue;
+                    }
+
+                    mismatchCount += Math.abs((presentWordFreq.get(word) - submitWordFreq.get(word)));
+                }
+
+                // If mismatch count is less than 20%, alert of possible duplicate
+                if (mismatchCount <= twentyPercent) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     },
     created() {
         this.path = window.location.pathname.split('/')[2];
@@ -85,14 +141,21 @@ export default {
     },
     template: `
         <div class="popup" v-if="this.username === ''">
-            <div class="username-popup-content">
+            <div class="popup-content">
                 <h2> Enter nickname </h2>
                 <input id="username-input" name="username" type="text"/>
                 <button @click="updateUsername">Join</button>
             </div>
         </div>
+        <div class="popup" v-if="this.alertDuplicate">
+            <div class="popup-content">
+                <h2> The question you are trying to submit may be a duplicate! </h2>
+                <button @click="acceptQuestion" class="accept" type="submit">Submit anyway</button>
+                <button @click="rejectQuestion" class="reject" type="submit">Don't submit</button>
+            </div>
+        </div>
         <div class="question-submit">
-            <form @submit.prevent="postQuestion">
+            <form @submit.prevent="checkDuplicatesBeforePostingQuestion">
                 <input type="text" v-model="submitQuestionForm.number" placeholder="Question number..."></textarea>
                 <textarea v-model="submitQuestionForm.content" placeholder="Type your question here..."></textarea>
                 <button>Submit answer</button>
