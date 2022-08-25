@@ -30,6 +30,20 @@ export default {
             return this.answers.filter(answer => {
                 return answer.answerToken === this.questionToken;
             });
+        },
+        percentageAnswers() {
+            // Parse a list of closed answers here, computing their percentage value
+            // Return in the format of? Answer: number%?
+            // Use calculated percentages for style width %
+
+            // The closed/open question system will not work by globally visually representing new answers without hacky solutions.
+            // because the current architecture of the system does not allow for answer to be globally deleted for everyone.
+            // This means that after submitting an answer, it cannot be changed or edited or deleted globally by anyone.
+
+            // Possible solution to this:
+            // On delete or editing of a answer, send a notify to the server with the answer token
+            //
+            return null;
         }
     },
     template: `

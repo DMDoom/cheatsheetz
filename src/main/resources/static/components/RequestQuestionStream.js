@@ -4,8 +4,7 @@
 
 // TODO:
 // add question and answer client-side delete buttons
-
-// add system to detect whether a question is a duplicate or not
+// add global delete/edit buttons
 
 // add active users list
 // add chat
@@ -22,7 +21,7 @@ export default {
     data() {
         return {
             path: "",
-            questions: [],
+            questions: new Map(),
             answers: [],
             username: "",
             alertDuplicate: false,
@@ -37,7 +36,11 @@ export default {
         async fetchQuestionsStream() {
             console.log("Connecting questions listener to room token: " + this.path);
             const stream = fetch("http://localhost:8080/get-questions-by-token?token=" + this.path);
-            const onMessage = obj => this.questions.push(obj);
+            const onMessage = obj => {
+                // Using HashMap instead to allow question updates and ensure unique tokens only
+                // this.questions.add(obj);
+                this.questions.set(obj.questionToken, obj);
+            }
             const onComplete = () => console.log('The question stream has completed');
 
             stream
@@ -94,7 +97,7 @@ export default {
             }
 
             // Compare against word frequency of existing questions
-            for (const presentQuestion of this.questions) {
+            for (const presentQuestion of this.questions.values()) {
                 // Count frequency of existing question
                 var presentWords = presentQuestion.content.toString().split(" ");
                 var presentWordFreq = new Map();
@@ -136,7 +139,8 @@ export default {
     },
     computed: {
         sortedQuestions() {
-            return this.questions.sort((a, b) => (a.number > b.number ? 1 : -1));
+            const arr = Array.from(this.questions.values());
+            return arr.sort((a, b) => (a.number > b.number ? 1 : -1));
         }
     },
     template: `
