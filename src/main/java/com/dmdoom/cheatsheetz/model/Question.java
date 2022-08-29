@@ -15,6 +15,7 @@ public class Question {
     private String content;
     private String questionToken;
     private String hexColor;
+    private boolean blacklisted;
     //private Type type;
 
     // Options

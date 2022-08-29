@@ -36,7 +36,8 @@ export default {
                 content: "",
                 submittedBy: "",
                 questionToken: "",
-                hexColor: ""
+                hexColor: "",
+                blacklisted: false
             }
         }
     },
@@ -45,7 +46,11 @@ export default {
             console.log("Connecting questions listener to room token: " + this.path);
             const stream = fetch("http://localhost:8080/get-questions-by-token?token=" + this.path);
             const onMessage = obj => {
-                this.questions.set(obj.questionToken, obj);
+                if (obj.blacklisted) {
+                    this.questions.delete(obj.questionToken);
+                } else {
+                    this.questions.set(obj.questionToken, obj);
+                }
             }
             const onComplete = () => console.log('The question stream has completed');
 
@@ -84,7 +89,6 @@ export default {
             console.log("Submitted question successfully: " + JSON.stringify(data));
         },
         async updateQuestion() {
-            console.log("UPDATING QUESTION");
             this.updateQuestionForm.submittedBy = this.username;
             const response = await fetch("http://localhost:8080/update-question?token=" + this.path, {
                 method: 'POST',
@@ -160,6 +164,12 @@ export default {
             this.updateQuestionForm.questionToken = question.questionToken;
             this.updateQuestionForm.hexColor = question.hexColor;
             this.updateQuestionForm.number = question.number;
+            this.updateQuestionForm.blacklisted = false;
+        },
+        deleteQuestion(token) {
+            this.updateQuestionForm.questionToken = token;
+            this.updateQuestionForm.blacklisted = true;
+            this.updateQuestion();
         }
     },
     created() {
@@ -217,6 +227,7 @@ export default {
                     <h2><span class="question-number" v-if="question.number > 0">{{question.number}}. </span>{{question.content}}</h2>
                 </div>
                 <button @click="enterEditMode(question.questionToken)" type="submit">Edit</button>
+                <button @click="deleteQuestion(question.questionToken)" type="submit">Delete</button>
             </div>
             <!-- Answers space -->
             <!-- Have a single answer stream that is listened to here and pass the list of questions to individual questions to filter instead -->
