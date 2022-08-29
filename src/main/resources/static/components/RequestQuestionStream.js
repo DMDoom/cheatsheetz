@@ -24,11 +24,19 @@ export default {
             questions: new Map(),
             answers: [],
             username: "",
+            editMode: false,
             alertDuplicate: false,
             submitQuestionForm: {
                 number: "",
                 content: "",
                 submittedBy: ""
+            },
+            updateQuestionForm: {
+                number: "",
+                content: "",
+                submittedBy: "",
+                questionToken: "",
+                hexColor: ""
             }
         }
     },
@@ -37,8 +45,6 @@ export default {
             console.log("Connecting questions listener to room token: " + this.path);
             const stream = fetch("http://localhost:8080/get-questions-by-token?token=" + this.path);
             const onMessage = obj => {
-                // Using HashMap instead to allow question updates and ensure unique tokens only
-                // this.questions.add(obj);
                 this.questions.set(obj.questionToken, obj);
             }
             const onComplete = () => console.log('The question stream has completed');
@@ -74,7 +80,23 @@ export default {
                 body: JSON.stringify(this.submitQuestionForm)
             })
 
-            console.log("Submitted question successfully: " + response.json());
+            const data = await response.json();
+            console.log("Submitted question successfully: " + JSON.stringify(data));
+        },
+        async updateQuestion() {
+            console.log("UPDATING QUESTION");
+            this.updateQuestionForm.submittedBy = this.username;
+            const response = await fetch("http://localhost:8080/update-question?token=" + this.path, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(this.updateQuestionForm)
+            })
+
+            const data = await response.json();
+            console.log("Updated question successfully: " + JSON.stringify(data));
+            this.editMode = false;
         },
         rejectQuestion() {
             this.alertDuplicate = false;
@@ -128,6 +150,16 @@ export default {
             }
 
             return false;
+        },
+        enterEditMode(token) {
+            this.editMode = true;
+
+            // Prepopulate fields
+            const question = this.questions.get(token);
+            this.updateQuestionForm.content = question.content;
+            this.updateQuestionForm.questionToken = question.questionToken;
+            this.updateQuestionForm.hexColor = question.hexColor;
+            this.updateQuestionForm.number = question.number;
         }
     },
     created() {
@@ -160,12 +192,22 @@ export default {
         </div>
         <div class="question-submit">
             <form @submit.prevent="checkDuplicatesBeforePostingQuestion">
-                <input type="text" v-model="submitQuestionForm.number" placeholder="Question number..."></textarea>
+                <input type="text" v-model="submitQuestionForm.number" placeholder="Question number...">
                 <textarea v-model="submitQuestionForm.content" placeholder="Type your question here..."></textarea>
                 <button>Submit answer</button>
             </form>
         </div>
         <div class="card" v-for="question in sortedQuestions">
+            <div class="popup" v-if="this.editMode">
+                <div class="popup-content">
+                    <!-- UPDATE QUESTION CONTENT -->
+                    <form @submit.prevent="updateQuestion">
+                        <input type="text" v-model="updateQuestionForm.number">
+                        <textarea v-model="updateQuestionForm.content"></textarea>
+                        <button type="submit">Update question</button>
+                    </form>
+                </div>
+            </div>
             <!-- Question space -->
             <div class="question" :style="{backgroundColor: question.hexColor}" >
                 <div class="question-submitted-by" style="background-color: #43506C;">
@@ -174,6 +216,7 @@ export default {
                 <div class="content">
                     <h2><span class="question-number" v-if="question.number > 0">{{question.number}}. </span>{{question.content}}</h2>
                 </div>
+                <button @click="enterEditMode(question.questionToken)" type="submit">Edit</button>
             </div>
             <!-- Answers space -->
             <!-- Have a single answer stream that is listened to here and pass the list of questions to individual questions to filter instead -->

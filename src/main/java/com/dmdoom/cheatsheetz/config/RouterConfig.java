@@ -42,8 +42,11 @@ public class RouterConfig {
                         .and(RequestPredicates.queryParam("token", t -> t != null)),
                         this::getAnswerStreamByRoomToken)
                 .andRoute(RequestPredicates.POST("/submit-answer")
-                                .and(RequestPredicates.queryParam("token", t -> t != null)),
-                        this::submitAnswerWithToken);
+                        .and(RequestPredicates.queryParam("token", t -> t != null)),
+                        this::submitAnswerWithToken)
+                .andRoute(RequestPredicates.POST("/update-question")
+                        .and(RequestPredicates.queryParam("token", t -> t != null)),
+                        this::submitUpdatedQuestion);
     }
 
     public Mono<ServerResponse> getAnswerStreamByRoomToken(ServerRequest request) {
@@ -55,7 +58,6 @@ public class RouterConfig {
         String token = request.queryParam("token").get().toString();
         return request.bodyToMono(Answer.class)
                 .doOnNext(answer -> {
-                    log.info("RECEIVED QUESTION: " + answer.toString());
                     answerSinkMap.get(token).tryEmitNext(answer);
                 })
                 .flatMap(answer -> {
@@ -84,6 +86,19 @@ public class RouterConfig {
                 .flatMap(question -> {
                     // Here is where the saving happens, call the repo method to save Question here in the .body()
                     // Use body(object, object.class) for raw data, use bodyValue for wrapping in Mono/Flux
+                    return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(question);
+                })
+                .log();
+    }
+
+    // Receive and emit an updated question
+    public Mono<ServerResponse> submitUpdatedQuestion(ServerRequest request) {
+        String token = request.queryParam("token").get().toString();
+        return request.bodyToMono(Question.class)
+                .doOnNext(question -> {
+                    questionSinkMap.get(token).tryEmitNext(question);
+                })
+                .flatMap(question -> {
                     return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(question);
                 })
                 .log();
