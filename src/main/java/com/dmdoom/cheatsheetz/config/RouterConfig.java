@@ -34,7 +34,7 @@ public class RouterConfig {
         return RouterFunctions
                 .route(RequestPredicates.POST("/submit-question")
                         .and(RequestPredicates.queryParam("token", t -> t != null)),
-                        this::submitQuestionWithToken)
+                        this::submitQuestionWithRoomToken)
                 .andRoute(RequestPredicates.GET("/get-questions-by-token")
                         .and(RequestPredicates.queryParam("token", t -> t != null)),
                         this::getQuestionStreamByRoomToken)
@@ -43,10 +43,10 @@ public class RouterConfig {
                         this::getAnswerStreamByRoomToken)
                 .andRoute(RequestPredicates.POST("/submit-answer")
                         .and(RequestPredicates.queryParam("token", t -> t != null)),
-                        this::submitAnswerWithToken)
+                        this::submitAnswerWithRoomToken)
                 .andRoute(RequestPredicates.POST("/update-question")
                         .and(RequestPredicates.queryParam("token", t -> t != null)),
-                        this::submitUpdatedQuestion);
+                        this::submitUpdatedQuestionWithRoomToken);
     }
 
     public Mono<ServerResponse> getAnswerStreamByRoomToken(ServerRequest request) {
@@ -54,7 +54,7 @@ public class RouterConfig {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_NDJSON).body(answerSinkMap.get(token).asFlux(), Answer.class).log();
     }
 
-    public Mono<ServerResponse> submitAnswerWithToken(ServerRequest request) {
+    public Mono<ServerResponse> submitAnswerWithRoomToken(ServerRequest request) {
         String token = request.queryParam("token").get().toString();
         return request.bodyToMono(Answer.class)
                 .doOnNext(answer -> {
@@ -74,7 +74,7 @@ public class RouterConfig {
 
     // Handle submitted questions
     // Generates question token and publishes to Sink
-    public Mono<ServerResponse> submitQuestionWithToken(ServerRequest request) {
+    public Mono<ServerResponse> submitQuestionWithRoomToken(ServerRequest request) {
         String token = request.queryParam("token").get().toString();
         return request.bodyToMono(Question.class)
                 .doOnNext(question -> {
@@ -92,7 +92,7 @@ public class RouterConfig {
     }
 
     // Receive and emit an updated question
-    public Mono<ServerResponse> submitUpdatedQuestion(ServerRequest request) {
+    public Mono<ServerResponse> submitUpdatedQuestionWithRoomToken(ServerRequest request) {
         String token = request.queryParam("token").get().toString();
         return request.bodyToMono(Question.class)
                 .doOnNext(question -> {
