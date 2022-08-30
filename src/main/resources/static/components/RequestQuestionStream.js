@@ -3,15 +3,9 @@
 // Answers to questions are filtered and rendered using individual question tokens that are randomly generated upon question submissions
 
 // TODO:
-// add question and answer client-side delete buttons
-// add global delete/edit buttons
-
+// add answer edit/delete functionality
 // add active users list
 // add chat
-
-// can delete from the list of questions/answers by specifying a list of deleted questions/answers which will not render
-// this can be made global by sending said list to the server to pass onto the rest of the users, or local, by keeping it to the user session
-
 import AnswersHandler from './AnswersHandler.js'
 
 export default {

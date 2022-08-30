@@ -49,8 +49,8 @@ h2 {
     display: none;
 }
 
-.card:hover .edit-buttons {
-    display: flex;
+.question:hover .edit-buttons {
+    display: block;
 }
 
 .question {
