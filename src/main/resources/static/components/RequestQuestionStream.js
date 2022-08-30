@@ -226,8 +226,10 @@ export default {
                 <div class="content">
                     <h2><span class="question-number" v-if="question.number > 0">{{question.number}}. </span>{{question.content}}</h2>
                 </div>
-                <button @click="enterEditMode(question.questionToken)" type="submit">Edit</button>
-                <button @click="deleteQuestion(question.questionToken)" type="submit">Delete</button>
+                <div class="edit-buttons" v-if="this.username === question.submittedBy">
+                    <button @click="enterEditMode(question.questionToken)" type="submit">Edit</button>
+                    <button @click="deleteQuestion(question.questionToken)" type="submit">Delete</button>
+                </div>
             </div>
             <!-- Answers space -->
             <!-- Have a single answer stream that is listened to here and pass the list of questions to individual questions to filter instead -->
