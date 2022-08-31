@@ -174,6 +174,9 @@ export default {
         },
         addClosedAnswer() {
             this.submitQuestionForm.closedAnswers.push({value: ''});
+        },
+        removeClosedAnswer() {
+            this.submitQuestionForm.closedAnswers.pop();
         }
     },
     created() {
@@ -213,6 +216,8 @@ export default {
                     <div v-for="(question, index) in submitQuestionForm.closedAnswers">
                         <input v-model="question.value" :key="index">
                     </div>
+                    <button type="button" @click="addClosedAnswer">Add closed answer</button>
+                    <button type="button" @click="removeClosedAnswer">Remove closed answer</button>
                     <button type="submit">Update question</button>
                 </form>
             </div>
@@ -226,6 +231,7 @@ export default {
                         <input v-model="question.value" :key="index">
                     </div>
                     <button type="button" @click="addClosedAnswer">Add closed answer</button>
+                    <button type="button" @click="removeClosedAnswer">Remove closed answer</button>
                     <button type="submit">Submit question</button>
                 </form>
             </div>
