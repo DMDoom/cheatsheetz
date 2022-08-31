@@ -23,7 +23,8 @@ export default {
             submitQuestionForm: {
                 number: "",
                 content: "",
-                submittedBy: ""
+                submittedBy: "",
+                closedAnswers: []
             },
             updateQuestionForm: {
                 number: "",
@@ -31,6 +32,7 @@ export default {
                 submittedBy: "",
                 questionToken: "",
                 hexColor: "",
+                closedAnswers: [],
                 blacklisted: false
             }
         }
@@ -158,12 +160,16 @@ export default {
             this.updateQuestionForm.questionToken = question.questionToken;
             this.updateQuestionForm.hexColor = question.hexColor;
             this.updateQuestionForm.number = question.number;
+            this.updateQuestionForm.closedAnswers = question.closedAnswers;
             this.updateQuestionForm.blacklisted = false;
         },
         deleteQuestion(token) {
             this.updateQuestionForm.questionToken = token;
             this.updateQuestionForm.blacklisted = true;
             this.updateQuestion();
+        },
+        addClosedAnswer() {
+            this.submitQuestionForm.closedAnswers.push({value: ''});
         }
     },
     created() {
@@ -194,24 +200,33 @@ export default {
                 <button @click="rejectQuestion" class="reject" type="submit">Don't submit</button>
             </div>
         </div>
-        <div class="question-submit">
-            <form @submit.prevent="checkDuplicatesBeforePostingQuestion">
-                <input type="text" v-model="submitQuestionForm.number" placeholder="Question number...">
-                <textarea v-model="submitQuestionForm.content" placeholder="Type your question here..."></textarea>
-                <button>Submit answer</button>
-            </form>
+        <div class="popup" v-if="this.editMode">
+            <div class="popup-content">
+                <!-- UPDATE QUESTION CONTENT -->
+                <form @submit.prevent="updateQuestion">
+                    <input type="text" v-model="updateQuestionForm.number">
+                    <textarea v-model="updateQuestionForm.content"></textarea>
+                    <div v-for="(question, index) in updateQuestionForm.closedAnswers">
+                        <input v-model="question.value" :key="index">
+                    </div>
+                    <button type="submit">Update question</button>
+                </form>
+            </div>
+        </div>
+        <div class="card">
+            <div class="question-submit">
+                <form @submit.prevent="checkDuplicatesBeforePostingQuestion">
+                    <input type="text" v-model="submitQuestionForm.number" placeholder="Question number...">
+                    <textarea v-model="submitQuestionForm.content" placeholder="Type your question here..."></textarea>
+                    <div v-for="(question, index) in submitQuestionForm.closedAnswers">
+                        <input v-model="question.value" :key="index">
+                    </div>
+                    <button type="button" @click="addClosedAnswer">Add closed answer</button>
+                    <button type="submit">Submit question</button>
+                </form>
+            </div>
         </div>
         <div class="card" v-for="question in sortedQuestions">
-            <div class="popup" v-if="this.editMode">
-                <div class="popup-content">
-                    <!-- UPDATE QUESTION CONTENT -->
-                    <form @submit.prevent="updateQuestion">
-                        <input type="text" v-model="updateQuestionForm.number">
-                        <textarea v-model="updateQuestionForm.content"></textarea>
-                        <button type="submit">Update question</button>
-                    </form>
-                </div>
-            </div>
             <!-- Question space -->
             <div class="question" :style="{backgroundColor: question.hexColor}" >
                 <div class="question-submitted-by" style="background-color: #43506C;">
@@ -223,6 +238,12 @@ export default {
                 <div class="edit-buttons" v-if="this.username === question.submittedBy">
                     <button @click="enterEditMode(question.questionToken)" type="submit">Edit</button>
                     <button @click="deleteQuestion(question.questionToken)" type="submit">Delete</button>
+                </div>
+            </div>
+            <!-- CLOSED ANSWERS -->
+            <div class="closed-answers-options" v-if="question.closedAnswers.length > 0" >
+                <div class="closed-answer" v-for="closedAnswer in question.closedAnswers" :style="{backgroundColor: question.hexColor}">
+                    <p> {{closedAnswer.value}} </p>
                 </div>
             </div>
             <!-- Answers space -->

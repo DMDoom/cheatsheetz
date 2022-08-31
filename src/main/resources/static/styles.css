@@ -207,3 +207,13 @@ button:hover {
   color: #f8f6ed;
   width: 150px;
 }
+
+.closed-answers-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.closed-answer {
+    padding: 2px;
+}
