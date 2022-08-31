@@ -24,12 +24,6 @@ export default {
                 number: "",
                 content: "",
                 submittedBy: "",
-                closedAnswers: []
-            },
-            updateQuestionForm: {
-                number: "",
-                content: "",
-                submittedBy: "",
                 questionToken: "",
                 hexColor: "",
                 closedAnswers: [],
@@ -83,20 +77,30 @@ export default {
 
             const data = await response.json();
             console.log("Submitted question successfully: " + JSON.stringify(data));
+            this.clearQuestionForm();
         },
         async updateQuestion() {
-            this.updateQuestionForm.submittedBy = this.username;
+            this.submitQuestionForm.submittedBy = this.username;
             const response = await fetch("http://localhost:8080/update-question?token=" + this.path, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(this.updateQuestionForm)
+                body: JSON.stringify(this.submitQuestionForm)
             })
 
             const data = await response.json();
             console.log("Updated question successfully: " + JSON.stringify(data));
             this.editMode = false;
+            this.clearQuestionForm();
+        },
+        clearQuestionForm () {
+            this.submitQuestionForm.content = "";
+            this.submitQuestionForm.questionToken = "";
+            this.submitQuestionForm.hexColor = "";
+            this.submitQuestionForm.number = "";
+            this.submitQuestionForm.closedAnswers = [];
+            this.submitQuestionForm.blacklisted = false;
         },
         rejectQuestion() {
             this.alertDuplicate = false;
@@ -156,16 +160,16 @@ export default {
 
             // Prepopulate fields
             const question = this.questions.get(token);
-            this.updateQuestionForm.content = question.content;
-            this.updateQuestionForm.questionToken = question.questionToken;
-            this.updateQuestionForm.hexColor = question.hexColor;
-            this.updateQuestionForm.number = question.number;
-            this.updateQuestionForm.closedAnswers = question.closedAnswers;
-            this.updateQuestionForm.blacklisted = false;
+            this.submitQuestionForm.content = question.content;
+            this.submitQuestionForm.questionToken = question.questionToken;
+            this.submitQuestionForm.hexColor = question.hexColor;
+            this.submitQuestionForm.number = question.number;
+            this.submitQuestionForm.closedAnswers = question.closedAnswers;
+            this.submitQuestionForm.blacklisted = false;
         },
         deleteQuestion(token) {
-            this.updateQuestionForm.questionToken = token;
-            this.updateQuestionForm.blacklisted = true;
+            this.submitQuestionForm.questionToken = token;
+            this.submitQuestionForm.blacklisted = true;
             this.updateQuestion();
         },
         addClosedAnswer() {
@@ -186,27 +190,27 @@ export default {
         }
     },
     template: `
-        <div class="popup" v-if="this.username === ''">
+        <div class="popup" v-show="this.username === ''">
             <div class="popup-content">
                 <h2> Enter nickname </h2>
                 <input id="username-input" name="username" type="text"/>
                 <button @click="updateUsername">Join</button>
             </div>
         </div>
-        <div class="popup" v-if="this.alertDuplicate">
+        <div class="popup" v-show="this.alertDuplicate">
             <div class="popup-content">
                 <h2> The question you are trying to submit may be a duplicate! </h2>
                 <button @click="acceptQuestion" class="accept" type="submit">Submit anyway</button>
                 <button @click="rejectQuestion" class="reject" type="submit">Don't submit</button>
             </div>
         </div>
-        <div class="popup" v-if="this.editMode">
+        <div class="popup" v-show="this.editMode">
             <div class="popup-content">
                 <!-- UPDATE QUESTION CONTENT -->
                 <form @submit.prevent="updateQuestion">
-                    <input type="text" v-model="updateQuestionForm.number">
-                    <textarea v-model="updateQuestionForm.content"></textarea>
-                    <div v-for="(question, index) in updateQuestionForm.closedAnswers">
+                    <input type="text" v-model="submitQuestionForm.number">
+                    <textarea v-model="submitQuestionForm.content"></textarea>
+                    <div v-for="(question, index) in submitQuestionForm.closedAnswers">
                         <input v-model="question.value" :key="index">
                     </div>
                     <button type="submit">Update question</button>
@@ -214,7 +218,7 @@ export default {
             </div>
         </div>
         <div class="card">
-            <div class="question-submit">
+            <div v-show="!editMode" class="question-submit">
                 <form @submit.prevent="checkDuplicatesBeforePostingQuestion">
                     <input type="text" v-model="submitQuestionForm.number" placeholder="Question number...">
                     <textarea v-model="submitQuestionForm.content" placeholder="Type your question here..."></textarea>
